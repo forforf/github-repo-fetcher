@@ -12,6 +12,7 @@
   },
   "description": "Fetches repo data, with flexible sorting and filtering",
   "dependencies":{
+    "angular": "latest",
     "underscore": "1.5.2"
   },
   "devDependencies": {
