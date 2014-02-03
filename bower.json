@@ -1,6 +1,6 @@
 {
   "name": "github-repo-fetcher",
-  "main": "index.js",
+  "main": "github-repo-fetcher.js",
   "version": "0.0.1",
   "homepage": "https://github.com/forforf/github-repo-fetcher",
   "authors": [
