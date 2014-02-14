@@ -13,7 +13,8 @@
   "description": "Fetches repo data, with flexible sorting and filtering",
   "dependencies":{
     "angular": "latest",
-    "underscore": "1.5.2"
+    "underscore": "1.5.2",
+    "angular-etag": "git://github.com/forforf/angular-etag.git"
   },
   "devDependencies": {
     "angular-mocks":"latest"

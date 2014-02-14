@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('GithubRepoFetcher', [])
+angular.module('GithubRepoFetcher', ['AngularEtag'])
 
   .factory('qChain', function () {
 
@@ -27,7 +27,7 @@ angular.module('GithubRepoFetcher', [])
     };
   })
 
-  .factory('GithubRepo', function ($http, qChain) {
+  .factory('GithubRepo', function (ehttp, qChain) {
 
     //filters is an array
     // if an item is an object, it will be merged with any other objects
@@ -55,13 +55,13 @@ angular.module('GithubRepoFetcher', [])
       });
 
       var urlOpts = {
-        method: 'GET',
+        //method: 'GET',
         url: 'https://api.github.com/users/' + username + '/repos',
         params: reqFilters
       };
 
       var fetcherFn = function () {
-        return $http(urlOpts).then(function (resp) {
+        return ehttp.get(urlOpts).then(function (resp) {
           return resp.data;
         });
       };
