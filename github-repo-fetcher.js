@@ -61,7 +61,7 @@ angular.module('GithubRepoFetcher', ['AngularEtag'])
       };
 
       var fetcherFn = function () {
-        return ehttp.get(urlOpts).then(function (resp) {
+        return ehttp.etagGet(urlOpts).then(function (resp) {
           return resp.data;
         });
       };
