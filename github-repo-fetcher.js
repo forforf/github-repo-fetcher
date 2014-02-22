@@ -2,6 +2,12 @@
 
 angular.module('GithubRepoFetcher', ['AngularEtag'])
 
+  .config(['$httpProvider', function($httpProvider) {
+    $httpProvider.defaults.useXDomain = true;
+    //delete $httpProvider.defaults.headers.common['X-Requested-With'];
+  }
+  ])
+
   .factory('qChain', function () {
 
     function chainErrorHandler(err) {
