@@ -87,6 +87,8 @@ describe('GithubRepoFetcher', function(){
       var user;
       var ghUrl;
       var repos;
+      var headers;
+      var fetchedHeaders;
       var _httpBackend;
 
       beforeEach(inject(function($httpBackend){
@@ -96,16 +98,22 @@ describe('GithubRepoFetcher', function(){
         var repo2 = {name: 'b'};
         var repo3 = {name: 'c'};
         repos = [repo1, repo2, repo3];
+
+        headers = {
+          'Header1': 'Header1 Value',
+          'Header2': 'Header2 Value'
+        };
+
         _httpBackend = $httpBackend;
 
         _httpBackend
           .when('GET', ghUrl)
-          .respond(repos);
+          .respond(200, repos, headers);
 
         fetcher = githubRepo.fetcher;
       }));
 
-      it('fetches from the repo', function(){
+      it('fetches the repo data', function(){
         var fetchedRepos;
 
         fetcher(user).then(function(resp){
@@ -115,6 +123,19 @@ describe('GithubRepoFetcher', function(){
          expect(fetchedRepos).toBeUndefined();
         _httpBackend.flush();
         expect(fetchedRepos).toEqual(repos);
+      });
+
+      it('fetches header data', function(){
+        var fetchedRepos;
+
+        fetcher(user).then(function(resp){
+          fetchedHeaders = githubRepo.headers();
+        });
+
+        expect(fetchedHeaders).toBeUndefined();
+        _httpBackend.flush();
+        expect(fetchedHeaders.header1).toEqual(headers.Header1);
+        expect(fetchedHeaders.header2).toEqual(headers.Header2);
       });
 
       //I'm not able to figure out an elegant test for this
@@ -131,7 +152,7 @@ describe('GithubRepoFetcher', function(){
         var expectedRepos = [ { name : 'c' }, { name : 'b' } ];
 
         fetcher(user, chains).then(function(resp){
-          fetchedRepos = resp;
+          fetchedRepos = resp
         });
 
         expect(fetchedRepos).toBeUndefined();

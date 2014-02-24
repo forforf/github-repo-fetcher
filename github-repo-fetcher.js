@@ -35,6 +35,9 @@ angular.module('GithubRepoFetcher', ['AngularEtag'])
 
   .factory('GithubRepo', function (ehttp, qChain) {
 
+    // will contain headers after a fetch
+    var headers;
+
     //filters is an array
     // if an item is an object, it will be merged with any other objects
     // and the merged object will be sent to the repo as url query parameters
@@ -68,6 +71,7 @@ angular.module('GithubRepoFetcher', ['AngularEtag'])
 
       var fetcherFn = function () {
         return ehttp.etagGet(urlOpts).then(function (resp) {
+          headers = resp.headers();
           return resp.data;
         });
       };
@@ -76,7 +80,10 @@ angular.module('GithubRepoFetcher', ['AngularEtag'])
       return filteredRepos(fetcherFn, respFilters);
     }
 
+    function headers(){ return headers; }
+
     return {
-      fetcher: fetcher
+      fetcher: fetcher,
+      headers: headers
     };
   });
