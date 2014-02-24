@@ -81,8 +81,11 @@ angular.module('GithubRepoFetcher', ['AngularEtag'])
 
       if(pw){
         var basicAuth = btoa(username+':'+pw);
-        //urlOpts.headers = urlOpts.headers || {};
-        //urlOpts.headers.Authorization = 'Basic ' + basicAuth
+
+        //DANGER!! DANGER!! - This header will be sent with any request to
+        // **ANY** URL.  This is useful for hitting any Github API url,
+        // but there needs to be a mechanism to restrict it to that URL only.
+        //See: http://stackoverflow.com/questions/20003465/disable-http-default-headers-for-certain-hosts
         ehttp.defaults.headers.common['Authorization'] = 'Basic ' + basicAuth;
       }
 
