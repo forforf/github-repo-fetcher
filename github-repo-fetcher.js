@@ -46,7 +46,16 @@ angular.module('GithubRepoFetcher', ['AngularEtag'])
     // each function is applied in order (each filter function must accept and
     // return an array of repo objects. Note the fn in the array must be a
     // fn that returns the fn to apply.
-    function fetcher(username, filters) {
+    function fetcher(credentials, filters) {
+      var username;
+      var pw;
+
+      if(typeof credentials === 'string'){
+        username = credentials;
+      } else {
+        username = credentials.username;
+        pw = credentials.password;
+      }
 
       if (!(_.isArray(filters))){
         filters = [];
@@ -68,6 +77,12 @@ angular.module('GithubRepoFetcher', ['AngularEtag'])
         url: 'https://api.github.com/users/' + username + '/repos',
         params: reqFilters
       };
+
+      if(pw){
+        var basicAuth = btoa(username+':'+pw);
+        urlOpts.headers = urlOpts.headers || {};
+        urlOpts.headers.Authorization = 'Basic ' + basicAuth
+      }
 
       var fetcherFn = function () {
         return ehttp.etagGet(urlOpts).then(function (resp) {

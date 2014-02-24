@@ -82,6 +82,81 @@ describe('GithubRepoFetcher', function(){
       expect(githubRepo).toBeDefined();
     });
 
+    describe('fetcher credentials - user', function(){
+      var user;
+      var pw;
+      var ghUrl;
+      var _httpBackend;
+      var fetchedRepos;
+
+      beforeEach(inject(function($httpBackend){
+        _httpBackend = $httpBackend;
+        user = 'forforforf';
+        pw = 'sekret';
+        ghUrl = 'https://api.github.com/users/'+user+'/repos'
+
+        _httpBackend
+          .when('GET', ghUrl, {})
+          .respond(200, 'repos', {});
+
+        githubRepo.fetcher(user).then(function(repos){
+          fetchedRepos = repos;
+        });
+
+
+
+      }));
+
+      it('sets credentials as username if string', function(){
+        expect(fetchedRepos).toBeUndefined();
+        _httpBackend.flush();
+        expect(fetchedRepos).toEqual('repos');
+
+      });
+
+    });
+
+    //Can't figure out how to test the Auth header is correctly set.
+    describe('fetcher credentials - full', function(){
+      var user;
+      var pw;
+      var ghUrl;
+      var _httpBackend;
+      var fetchedRepos;
+      var headers;
+
+      beforeEach(inject(function($httpBackend){
+        _httpBackend = $httpBackend;
+        user = 'forforforf';
+        pw = 'sekret';
+        ghUrl = 'https://api.github.com/users/'+user+'/repos'
+        var creds = {username: user, password: pw};
+
+        var basicAuth = btoa(user+':'+pw);
+        var authHdr = {Authorization: 'Basic ' + basicAuth};
+
+        //Can't get it to recognize headers
+        _httpBackend
+          .when('GET', ghUrl, {} /* , authHdr */)
+          .respond(200, 'repos', {});
+
+        githubRepo.fetcher(creds).then(function(repos){
+          fetchedRepos = repos
+        });
+
+
+
+      }));
+
+      it('sets credentials as username if string', function(){
+        expect(fetchedRepos).toBeUndefined();
+        _httpBackend.flush();
+        expect(fetchedRepos).toEqual('repos');
+
+      });
+
+    });
+
     describe('fetcher', function(){
       var fetcher;
       var user;
