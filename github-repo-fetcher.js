@@ -5,6 +5,7 @@ angular.module('GithubRepoFetcher', ['AngularEtag'])
   .config(['$httpProvider', function($httpProvider) {
     $httpProvider.defaults.useXDomain = true;
     //delete $httpProvider.defaults.headers.common['X-Requested-With'];
+
   }
   ])
 
@@ -80,8 +81,9 @@ angular.module('GithubRepoFetcher', ['AngularEtag'])
 
       if(pw){
         var basicAuth = btoa(username+':'+pw);
-        urlOpts.headers = urlOpts.headers || {};
-        urlOpts.headers.Authorization = 'Basic ' + basicAuth
+        //urlOpts.headers = urlOpts.headers || {};
+        //urlOpts.headers.Authorization = 'Basic ' + basicAuth
+        ehttp.defaults.headers.common['Authorization'] = 'Basic ' + basicAuth;
       }
 
       var fetcherFn = function () {
