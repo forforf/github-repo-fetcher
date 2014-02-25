@@ -8,6 +8,5 @@ ratings:
   tests: 7
   unique: 6
 progress:
-  "in development":
-    "active development": null
+  "in development": "active development"
 
