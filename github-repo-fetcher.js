@@ -16,14 +16,8 @@ angular.module('GithubRepoFetcher', ['AngularEtag'])
       return err;
     }
 
-    // New API - alignes better with code style
-    function make(chain, initPromFn){
-      return generator(initPromFn, chain);
-    }
-
     //This function runs the initPromFn (which should be a promise that resolves to a collection)
     //then runs each filter in sequence against the resulting collection
-    //ToDo: Deprecate
     function generator(initPromFn, chain){
       if (!(_.isArray(chain))){
         return initPromFn();
@@ -37,8 +31,7 @@ angular.module('GithubRepoFetcher', ['AngularEtag'])
 
     return {
       //original API, will be deprecated eventually
-      generator: generator,
-      make: make
+      generator: generator
     };
   })
 
