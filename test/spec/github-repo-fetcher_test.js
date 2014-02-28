@@ -236,5 +236,127 @@ describe('GithubRepoFetcher', function(){
       })
 
     });
+
+    describe('rateLimits credentials - user', function(){
+      var user;
+      var pw;
+      var ghUrl;
+      var _httpBackend;
+      var fetchedLimits;
+
+      beforeEach(inject(function($httpBackend){
+        _httpBackend = $httpBackend;
+        user = 'forforforf';
+        pw = 'sekret';
+        ghUrl = 'https://api.github.com/rate_limit';
+
+        _httpBackend
+          .when('GET', ghUrl, {})
+          .respond(200, 'limits', {});
+
+        githubRepo.rateLimits(user).then(function(resp){
+          fetchedLimits = resp;
+        });
+
+
+
+      }));
+
+      it('sets credentials as username if string', function(){
+        expect(fetchedLimits).toBeUndefined();
+        _httpBackend.flush();
+        expect(fetchedLimits).toEqual('limits');
+      });
+
+    });
+
+    //Can't figure out how to test the Auth header is correctly set.
+    describe('rateLimits credentials - full', function(){
+      var user;
+      var pw;
+      var ghUrl;
+      var _httpBackend;
+      var fetchedLimits;
+
+      beforeEach(inject(function($httpBackend){
+        _httpBackend = $httpBackend;
+        user = 'forforforf';
+        pw = 'sekret';
+        ghUrl = 'https://api.github.com/rate_limit';
+        var creds = {username: user, password: pw};
+
+        var basicAuth = btoa(user+':'+pw);
+        var authHdr = {Authorization: 'Basic ' + basicAuth};
+
+        //Can't get it to recognize headers
+        _httpBackend
+          .when('GET', ghUrl, {} /* , authHdr */)
+          .respond(200, 'limits', {});
+
+        githubRepo.rateLimits(creds).then(function(resp){
+          fetchedLimits = resp
+        });
+      }));
+
+      it('sets credentials as username if string', function(){
+        expect(fetchedLimits).toBeUndefined();
+        _httpBackend.flush();
+        expect(fetchedLimits).toEqual('limits');
+      });
+    });
+
+    describe('rateLimits', function(){
+      var rateLimitFetcher;
+      var user;
+      var ghUrl;
+      var limits;
+      var _httpBackend;
+
+      beforeEach(inject(function($httpBackend){
+        user = 'forforforf';
+        ghUrl = 'https://api.github.com/rate_limit'
+
+        limits = {
+          "resources": {
+            "core": {
+              "limit": 5000,
+              "remaining": 4999,
+              "reset": 1372700873
+            },
+            "search": {
+              "limit": 20,
+              "remaining": 18,
+              "reset": 1372697452
+            }
+          },
+          "rate": {
+            "limit": 5000,
+            "remaining": 4999,
+            "reset": 1372700873
+          }
+        };
+
+        _httpBackend = $httpBackend;
+
+        _httpBackend
+          .when('GET', ghUrl)
+          .respond(200, limits);
+
+        rateLimitFetcher = githubRepo.rateLimits;
+      }));
+
+      it('fetches the repo data', function(){
+        var fetchedLimits;
+
+        rateLimitFetcher(user).then(function(resp){
+          fetchedLimits = resp;
+        });
+
+        expect(fetchedLimits).toBeUndefined();
+        _httpBackend.flush();
+        expect(fetchedLimits).toEqual(limits);
+      });
+
+    });
   });
 });

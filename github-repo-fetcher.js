@@ -30,7 +30,6 @@ angular.module('GithubRepoFetcher', ['AngularEtag'])
     }
 
     return {
-      //original API, will be deprecated eventually
       generator: generator
     };
   })
@@ -100,10 +99,48 @@ angular.module('GithubRepoFetcher', ['AngularEtag'])
       return filteredRepos(fetcherFn, respFilters);
     }
 
+
+    // I don't like this approach.
+    // But returning an object like resp.data, resp.headers
+    // breaks the API and chaining.  But this approach is dangerous because
+    // headers is volatile, and you can't be 100% sure you got the headers
+    // for a given request (another request may have just came in).
     function headers(){ return headers; }
+
+    function rateLimits(credentials){
+      var username;
+      var pw;
+
+      if(typeof credentials === 'string'){
+        username = credentials;
+      } else {
+        username = credentials.username;
+        pw = credentials.password;
+      }
+
+      var urlOpts = {
+        url: 'https://api.github.com/rate_limit'
+      };
+
+      if(pw){
+        var basicAuth = btoa(username+':'+pw);
+
+        //DANGER!! DANGER!! - This header will be sent with any request to
+        // **ANY** URL.  This is useful for hitting any Github API url,
+        // but there needs to be a mechanism to restrict it to that URL only.
+        //See: http://stackoverflow.com/questions/20003465/disable-http-default-headers-for-certain-hosts
+        ehttp.defaults.headers.common['Authorization'] = 'Basic ' + basicAuth;
+      }
+
+      return ehttp.etagGet(urlOpts).then(function(resp){
+        return resp.data;
+      });
+
+    }
 
     return {
       fetcher: fetcher,
-      headers: headers
+      headers: headers,
+      rateLimits: rateLimits
     };
   });
